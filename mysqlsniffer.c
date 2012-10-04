@@ -239,6 +239,32 @@ void print_stats(void)
    printf("%u MySQL packets captured (%u bytes)\n", total_mysql_pkts, total_mysql_bytes);
 }
 
+/**
+ * Return the start offset of the IP portion of the packet
+ *
+ * This depends on the data link type -- e.g.: for Ethernet (the most common
+ * case), it's 14 bytes in.  For loopback on BSDish systems (including Mac OS
+ * X), it's only 4 bytes in.
+ */
+int get_ip_start_offset()
+{
+    /*
+     * The DLT_NULL and DLT_LOOP packet headers are 4 bytes long. They contain only a
+     * 32-bit integer that specifies the family, e.g. AF_INET.
+     */
+    const int null_hdrlen = 4;
+
+    if (dlt == DLT_EN10MB) {
+        return SIZE_ETHERNET;
+    }
+    else if (dlt == DLT_NULL || dlt == DLT_LOOP) {
+        return null_hdrlen;
+    }
+    else {
+        fprintf(stderr, "Unknown data link type %d; %s; %s -- will probably have trouble parsing packets...\n", dlt, dlt_name, dlt_desc);
+    }
+}
+
 void proc_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
 {
    char origin = 0;
@@ -249,6 +275,7 @@ void proc_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *p
    u_int size_tcp;
    u_int size_mysql;
    int retval = PKT_UNKNOWN_STATE;
+   int ip_start_offset = get_ip_start_offset();
 
    if(header->len > SNAP_LEN) {
       printf("Captured packet too large: %d bytes\n", header->len);
@@ -256,11 +283,11 @@ void proc_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *p
       return;
    }
 
-   ip         = (struct sniff_ip*)(packet + SIZE_ETHERNET);
+   ip         = (struct sniff_ip*)(packet + ip_start_offset);
    size_ip    = IP_HL(ip) * 4;
-   tcp        = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
+   tcp        = (struct sniff_tcp*)(packet + ip_start_offset + size_ip);
    size_tcp   = TH_OFF(tcp) * 4;
-   mysql      = (packet + SIZE_ETHERNET + size_ip + size_tcp);
+   mysql      = (packet + ip_start_offset + size_ip + size_tcp);
    size_mysql = ntohs(ip->ip_len) - size_ip - size_tcp;
 
    if(size_mysql > 0 || op.tcp_ctrl) {
