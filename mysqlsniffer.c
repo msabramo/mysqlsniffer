@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
       net = mask = 0;
 	}
 
-   handle = pcap_open_live(dev, SNAP_LEN, 1, 0, errbuf);
+   handle = pcap_open_live(dev, SNAP_LEN, 1, 1000, errbuf);
    if(handle == NULL) {
       printf("Couldn't open device %s: %s\n", dev, errbuf);
       exit(-1);
