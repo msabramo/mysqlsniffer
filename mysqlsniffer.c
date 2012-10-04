@@ -81,7 +81,7 @@ void free_tags(void);
 int main(int argc, char *argv[])
 {
    char *dev = NULL;
-   char errbuf[PCAP_ERRBUF_SIZE];
+   char errbuf[PCAP_ERRBUF_SIZE] = {0};
    bpf_u_int32 mask;
    bpf_u_int32 net;
 
@@ -111,6 +111,9 @@ int main(int argc, char *argv[])
    if(handle == NULL) {
       printf("Couldn't open device %s: %s\n", dev, errbuf);
       exit(-1);
+   }
+   if (strlen(errbuf) > 0) {
+       printf("Warning from pcap_open_live: %s\n", errbuf);
    }
 
    if(pcap_compile(handle, &fp, filter_exp, 0, net) == -1) {
