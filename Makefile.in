@@ -2,6 +2,7 @@ SOURCES = \
 		  mysqlsniffer.c \
 		  packet_handlers.c \
 		  misc.c
+CC = @CC@
 CFLAGS = -O2
 LIBS = -lpcap
 TARGET = mysqlsniffer

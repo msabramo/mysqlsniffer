@@ -1,8 +1,15 @@
 // packet_handlers.c Aug 18, 2006 UNSTABLE
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
 #include "mysql_defines.h"
 #include "user_defines.h"
 #include "state_map.h"

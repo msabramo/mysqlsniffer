@@ -1,5 +1,11 @@
 // misc.h Aug 18, 2006 UNSTABLE
 
+#include "config.h"
+
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
 #define G2(x) *((u_short *)x);
 #define G4(x) *((u_int *)x);
 #define MATCH(a, b) (a == b ? 1 : 0)
