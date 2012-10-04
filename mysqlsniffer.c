@@ -238,7 +238,6 @@ void print_stats(void)
 void proc_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
 {
    char origin = 0;
-   const struct sniff_ethernet *ethernet;
    const struct sniff_ip *ip;
    const struct sniff_tcp *tcp;
    const u_char *mysql;
@@ -253,10 +252,9 @@ void proc_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *p
       return;
    }
 
-   ethernet   = (struct sniff_ethernet*)(packet);
-	ip         = (struct sniff_ip*)(packet + SIZE_ETHERNET);
+   ip         = (struct sniff_ip*)(packet + SIZE_ETHERNET);
    size_ip    = IP_HL(ip) * 4;
-	tcp        = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
+   tcp        = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
    size_tcp   = TH_OFF(tcp) * 4;
    mysql      = (packet + SIZE_ETHERNET + size_ip + size_tcp);
    size_mysql = ntohs(ip->ip_len) - size_ip - size_tcp;
