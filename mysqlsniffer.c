@@ -51,6 +51,10 @@ struct bpf_program fp;
 char   filter_exp[11] = "port ";
 u_int  total_mysql_pkts;
 u_int  total_mysql_bytes;
+int dlt;
+const char *dlt_name;
+const char *dlt_desc;
+
 
 /*
   Function protos
@@ -126,9 +130,9 @@ int main(int argc, char *argv[])
       exit(-1);
    }
 
-   int dlt = pcap_datalink(handle);
-   const char *dlt_name = pcap_datalink_val_to_name(dlt);
-   const char *dlt_desc = pcap_datalink_val_to_description(dlt);
+   dlt = pcap_datalink(handle);
+   dlt_name = pcap_datalink_val_to_name(dlt);
+   dlt_desc = pcap_datalink_val_to_description(dlt);
 
    printf("mysqlsniffer listening for MySQL on interface %s %s\n", dev, filter_exp);
    printf("Data link type: %d; %s; %s\n", dlt, dlt_name, dlt_desc);
